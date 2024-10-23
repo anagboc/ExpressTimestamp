@@ -26,7 +26,39 @@ app.get("/api/hello", function (req, res) {
 
 
 
+
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
+});
+
+// Nueva ruta /api/:date? para manejar fechas
+app.get('/api/:date?', (req, res) => {
+  const dateParam = req.params.date;
+  console.log(dateParam);
+  
+  let date;
+
+  // Si no se proporciona una fecha, usa la fecha actual
+  if (!dateParam) {
+      date = new Date();
+  } else {
+      // Si el parámetro de fecha es un número (marca de tiempo)
+      if (!isNaN(dateParam)) {
+          date = new Date(parseInt(dateParam));
+      } else {
+          date = new Date(dateParam);
+      }
+  }
+
+  // Verificar si la fecha es válida
+  if (date.toString() === "Invalid Date") {
+      return res.json({ error: "Invalid Date" });
+  }
+
+  // Devolver el formato Unix y UTC
+  res.json({
+      unix: date.getTime(),
+      utc: date.toUTCString()
+  });
 });
